@@ -3,6 +3,7 @@ Sorting algorithms on Django
 
 Installation:<br />
 Download package<br />
+Install required dependencies<br />
 Cd to destination folder<br />
 
 Run ```python manage.py runserver``` in cmd/bash<br /><br />
