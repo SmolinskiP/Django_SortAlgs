@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Sorting algorithms</title>
+	<link rel="shortcut icon" href="{%  static 'personalApp/img/algorithm.ico' %}">
+	<link rel="stylesheet" href="{% static 'personalApp/css/canvas.css' %}">
+	<link rel="stylesheet" href="{% static 'personalApp/css/slider.css' %}">
+	<link rel="stylesheet" href="{% static 'personalApp/css/button.css' %}">
+	<link rel="stylesheet" href="{% static 'personalApp/css/checkbox.css' %}">
+</head>
+<body>
+	<table style="width:100%">
+		<th style="width:10%" valign="top" align="left">
+		
+		{% if alg_type == "bitonic" %} {{"WARNING!!!<br>In order to Bitonic Sort to work set amount of elements to power of 2 (4,8,16,1024,4096 etc)"}} {% endif %}
+		
+		</th>
+		<th style="width:80%"><center><canvas id="canvasElement" class="inline-block-centered" width="1300" height="800"></canvas></center></th>
+		<th style="width:10%" valign="top" align="left">Number of loops through array:<p id="p1">0</p>Number of all steps:<p id="p2">0</p>Time passed (ms):<p id="p3">0</p></th>
+	</table>
+	<div class="slidecontainer"><br>
+		<form action="" method="post">
+			{% csrf_token %}
+			<label for="elements">
+				<input type="range" id="elements" name="elements" value="{{ elements }}" min="5" max="10000" class="slider" oninput="elementsOutput.value = elements.value"><br>
+				Number of elements to sort (range: 5-10000):<output id="elementsOutput">{{ elements }}</output><br><br>
+			</label>
+			<label for="time">
+				<input type="range" id="time" name="time" value="{{ time }}" min="1" max="1000" class="slider" oninput="timeOutput.value = time.value"><br>
+				Time in miliseconds between each sort (range: 1-1000):<output id="timeOutput">{{ time }}</output><br>
+			</label>
+			<label for="checkbox1" class="checkbox">
+			<br><br>
+				<span class="label">REVERSE ARRAY</span>
+				<input type="checkbox" id="checkbox1" name="checkbox1" value="checkbox1" {{ checked }}>
+				<span class="checkmark"></span>
+			</label>
+			<label for="checkbox2" class="checkbox">
+				<span class="label">STEP ARRAY</span>
+				<input type="checkbox" id="checkbox2" name="checkbox2" value="checkbox2" {{ checked2 }}>
+				<span class="checkmark"></span>
+			</label>
+		Normal algorithms<br>
+		<button type="submit" id="SortButton" name="SortButton" value="bubble" class="button-36">Bubble<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="selection" class="button-36">Selection<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="insertion" class="button-36">Insertion<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="merge" class="button-36">Merge<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="quick" class="button-36">Quick<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="heap" class="button-36">Heap<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="counting" class="button-36">Counting<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="radix" class="button-36">Radix<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="bucket" class="button-36">Bucket<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="bingo" class="button-36">Bingo<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="shell" class="button-36">Shell<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="tim" class="button-36">Tim<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="comb" class="button-36">Comb<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="cycle" class="button-36">Cycle<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="coctail" class="button-36">Coctail<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="bitonic" class="button-36">Bitonic<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="pancake" class="button-36">Pancake<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="oddEven" class="button-36">Odd-Even<br>SORT!</button><br>
+		For the lulz algorithms<br>
+		<button type="submit" id="SortButton" name="SortButton" value="gnome" class="button-36">Gnome<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="bogo" class="button-36">Bogo<br>SORT!</button><br>
+		More visual versions of some algorithms.<br>
+		<button type="submit" id="SortButton" name="SortButton" value="visbubble" class="button-36">Visual Bubble<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="viscoctail" class="button-36">Visual Coctail<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="visoddEven" class="button-36">Visual Odd-Even<br>SORT!</button>
+		<button type="submit" id="SortButton" name="SortButton" value="viscomb" class="button-36">Visual Comb<br>SORT!</button>
+		</form>
+	</div>
+
+<script>
+//Declare Variables
+var no_loops = 1;
+var no_steps = 0;
+var c = document.getElementById('canvasElement');
+const canvas = document.getElementById('canvasElement');
+canvas.width  = window.innerWidth * 0.8;
+canvas.height = window.innerHeight * 0.7;
+function windowResize() {
+  canvas.width  = window.innerWidth * 0.8;
+  canvas.height = window.innerHeight * 0.7;
+};
+
+window.addEventListener('resize', windowResize);
+
+var ctx = c.getContext('2d');
+var X = [];
+var LastX = [];
+var Y = [];
+var LastY = [];
+
+ctx.font = "15px Arial";
+ctx.textAlign = "start";
+ctx.fillText("textAlign=start", canvas.width, canvas.height);
+
+var number = {{ elements }};
+var time = {{ time }};
+var worstcase = {{ worstcase }};
+
+var pos_x = canvas.width - (canvas.width/number/2);
+var pos_y = canvas.height;
+var delay = canvas.width/number;
+var delay_y = canvas.height/number
+console.log(canvas.width);
+</script>
+
+<script type="module">
+import { drawArray } from "{% static 'personalApp/js/drawArray.js' %}";
+{% if steps == 0 %}{{"import { createArray } from "}}"{% static 'personalApp/js/createArray.js' %}{{'";'}} {% endif %}
+{% if steps == 1 %}{{"import { createStepArray } from "}}"{% static 'personalApp/js/createArray.js' %}{{'";'}} {% endif %}
+import { shuffle } from "{% static 'personalApp/js/shuffleArray.js' %}";
+import * as sorting from "{% static 'personalApp/js/sortingAlgorithms.js' %}";
+{% if steps == 0 %}{{"createArray(X, Y, LastX, LastY, number, window.innerHeight);"}} {% endif %}
+{% if steps == 1 %}{{"createStepArray(X, Y, LastX, LastY, number, window.innerHeight);"}} {% endif %}
+if (worstcase == 0){
+	LastY = shuffle(LastY);
+}
+
+var temparray = [];
+for (let i = 0; i < LastY.length; i++) {
+	if (temparray.length != LastY.length){
+		temparray.push(LastY[i]);
+	}
+}
+drawArray(X, Y, LastX, LastY);
+const iterator = sorting.{{ alg_type }}Sort(LastY{% if alg_type == "counting" %}{{", temparray"}}{% endif %});
+const timer = setInterval(() => {
+  const state = iterator.next().value;
+  if (!state) {
+    clearInterval(timer);
+    return;
+  }
+  ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+  drawArray(X, Y, LastX, LastY);
+}, time);
+
+</script>
+
+
+</body>
+</html>
+
+		
+
+
+

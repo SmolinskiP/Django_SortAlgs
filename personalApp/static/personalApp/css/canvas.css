@@ -1,0 +1,14 @@
+canvas {
+	border:1px solid black;
+}
+th {
+  text-align: left;
+}
+inline-block-centered {
+	display: inline-block;
+	vertical-align: middle;
+}
+container {
+	display: flex;
+	flex-direction: "row";
+}
