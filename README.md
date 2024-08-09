@@ -11,7 +11,7 @@ Follow these steps to get Django_SortAlgs up and running on your local machine:
 
 2. **Install required dependencies:**
    - Make sure you have Python and Django installed.
-   - Install any additional dependencies listed in the `requirements.txt` file.
+   - Install any additional dependencies.
 
 3. **Navigate to the destination folder:**
    cd <destination_folder>
